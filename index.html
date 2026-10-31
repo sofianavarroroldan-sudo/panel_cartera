@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cartera BETA0 · Panel de seguimiento</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#F3F6FB;--card:#fff;--ink:#0B1F3A;--mut:#5B6B82;--line:#DCE4F0;--b1:#0B3D91;--b2:#2563EB;--b3:#60A5FA;--up:#0E7A4F;--dn:#B42318;--wa:#9A6700;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1220;--card:#111C30;--ink:#E6EDF8;--mut:#93A4BF;--line:#22324D;--b1:#7FB0FF;--b2:#3B82F6;--b3:#60A5FA;--up:#34D399;--dn:#F87171;--wa:#FBBF24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1220;--card:#111C30;--ink:#E6EDF8;--mut:#93A4BF;--line:#22324D;--b1:#7FB0FF;--b2:#3B82F6;--b3:#60A5FA;--up:#34D399;--dn:#F87171;--wa:#FBBF24;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 'IBM Plex Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+header{background:linear-gradient(120deg,#071A33,#0B3D91);color:#fff;padding:22px 24px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+header h1{margin:0;font-size:22px;font-weight:600}header p{margin:4px 0 0;color:#BFD4F5;font-size:13px}
+header button{background:#ffffff22;color:#fff;border:0;border-radius:8px;padding:6px 10px;cursor:pointer}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+nav button{border:0;background:none;color:var(--mut);padding:8px 14px;border-radius:8px;font:inherit;font-weight:500;cursor:pointer}nav button.on{background:var(--b2);color:#fff}
+main{max-width:1180px;margin:0 auto;padding:20px}
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));margin-top:14px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.k span{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.k b{display:block;font-size:24px;font-weight:600;margin:4px 0}.k i{font-style:normal;color:var(--mut);font-size:12px}
+h2{font-size:15px;margin:0 0 10px;font-weight:600}.mut{color:var(--mut)}small{color:var(--mut)}
+.up{color:var(--up)}.dn{color:var(--dn)}.wa{color:var(--wa)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:right;color:var(--mut);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
+.w{overflow-x:auto}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+.t-ok{background:color-mix(in srgb,var(--up) 16%,transparent);color:var(--up)}.t-wa{background:color-mix(in srgb,var(--wa) 16%,transparent);color:var(--wa)}.t-dn{background:color-mix(in srgb,var(--dn) 16%,transparent);color:var(--dn)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:100%}
+textarea{min-height:90px;font-family:ui-monospace,monospace;font-size:12px}
+.p{background:var(--b2);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;margin-top:8px}.s{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.ban{background:color-mix(in srgb,var(--wa) 14%,transparent);border:1px solid var(--wa);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.f{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.f label{font-size:12px;color:var(--mut)}
+.bar{height:6px;background:var(--b3);border-radius:3px}
+.tl{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+canvas{max-height:320px}
+</style></head><body>
+<header><div><h1>Cartera BETA0 · Panel de seguimiento</h1><p>Evolución frente al mercado y apoyo a la decisión de la primera ventana de cambios (13/11/2026)</p><p id="st" style="font-size:12px;color:#BFD4F5"></p></div><button onclick="th()">◐ Tema</button></header>
+<nav id="nav"></nav><main id="m"></main>
+<script>
+const DEF={prov:0,cfg:{start:'2026-10-19',capital:1e6,fx0:1.1195,rf:2.4,wmin:5,wmax:10,win1:'2026-11-13',win2:'2026-12-11',end:'2027-01-29',bn:['MSCI World','S&P 500','Bono euro 1-3 años']},
+h:[['iShares S&P 500 Information Tech Sector UCITS ETF USD (Acc)','IE00B3WJKG14','RV','EE. UU.','EUR',2127.518053971874,46.69],['iShares S&P 500 Communication Sector ETF','IE00BDDRF478','RV','EE. UU.','EUR',7979.330007127584,12.41],['iShares Gold Producers UCITS ETF USD (Acc)','IE00B6R52036','RV','Global (mineras)','EUR',1404.4943820224719,36.34],['iShares Core MSCI Japan IMI UCITS ETF USD (Acc)','IE00B4L5YX21','RV','Japón','EUR',1346.82085239586,73.8],['iShares Core MSCI EM IMI UCITS ETF USD (Acc)','IE00BKM4GZ66','RV','Emergentes','EUR',2089.009143496921,46.35],['Vanguard European Stock Index Fund Investor EUR Acc','IE0007987690','RV','Europa','EUR',2393.89163164752,41.51],['iShares Core MSCI Pacific ex-Japan UCITS ETF USD (Acc)','IE00B52MJY50','RV','Asia-Pacífico','EUR',458.118403051283,216.88],['iShares S&P 500 Industrials Sector UCITS ETF USD (Acc)','IE00B4LN9N13','RV','EE. UU.','EUR',3950.24700070572,12.7],['iShares Core € Corp Bond UCITS ETF EUR (Acc)','IE00BF11F565','RF','Euro crédito','EUR',18630.3917137476,5.33],['iShares € High Yield Corp Bond UCITS ETF EUR (Acc)','IE00BF3N7094','RF','Euro high yield','EUR',14586.709886547813,6.18],['iShares € Govt Bond 1-3yr UCITS ETF EUR (Acc)','IE00B3VTMJ91','RF','Euro gobierno','EUR',430.55196762249204,116.32],['iShares € Cash UCITS ETF EUR (Acc)','IE000JJPY166','MON','Euro monetario','EUR',3836.317135549872,15.64]].map(a=>({n:a[0],i:a[1],c:a[2],r:a[3],u:a[4],q:a[5],p:a[6]})),
+dates:[],px:{},fx:{},bx:[{},{},{}]};
+let S,T='res',CH={},db=null;const KEY='beta0v2';const st=t=>{const e=document.querySelector('#st');if(e)e.textContent=t};const SEED={"prov":0,"cfg":{"start":"2026-10-18","capital":1000000,"fx0":1,"rf":2.4,"wmin":5,"wmax":10,"win1":"2026-11-13","win2":"2026-12-11","end":"2027-01-29","bn":["MSCI World","S&P 500","Bono euro 1-3 años"]},"h":[{"n":"iShares S&P 500 Information Tech Sector UCITS ETF USD (Acc)","i":"IE00B3WJKG14","c":"RV","r":"EE. UU.","u":"EUR","q":2127.518053971874,"p":46.69},{"n":"iShares S&P 500 Communication Sector ETF","i":"IE00BDDRF478","c":"RV","r":"EE. UU.","u":"EUR","q":7979.330007127584,"p":12.41},{"n":"iShares Gold Producers UCITS ETF USD (Acc)","i":"IE00B6R52036","c":"RV","r":"Global (mineras)","u":"EUR","q":1404.4943820224719,"p":36.34},{"n":"iShares Core MSCI Japan IMI UCITS ETF USD (Acc)","i":"IE00B4L5YX21","c":"RV","r":"Japón","u":"EUR","q":1346.82085239586,"p":73.8},{"n":"iShares Core MSCI EM IMI UCITS ETF USD (Acc)","i":"IE00BKM4GZ66","c":"RV","r":"Emergentes","u":"EUR","q":2089.009143496921,"p":46.35},{"n":"Vanguard European Stock Index Fund Investor EUR Acc","i":"IE0007987690","c":"RV","r":"Europa","u":"EUR","q":2393.89163164752,"p":41.51},{"n":"iShares Core MSCI Pacific ex-Japan ETF USD Acc","i":"IE00B52MJY50","c":"RV","r":"Asia-Pacífico","u":"EUR","q":458.118403051283,"p":216.88},{"n":"iShares S&P 500 Industrials Sector UCITS ETF USD (Acc)","i":"IE00B4LN9N13","c":"RV","r":"EE. UU.","u":"EUR","q":3950.24700070572,"p":12.7},{"n":"iShares Core € Corp Bond UCITS ETF EUR (Acc)","i":"IE00BF11F565","c":"RF","r":"Euro crédito","u":"EUR","q":18630.3917137476,"p":5.33},{"n":"iShares € High Yield Corp Bond UCITS ETF EUR (Acc)","i":"IE00BF3N7094","c":"RF","r":"Euro high yield","u":"EUR","q":14586.709886547813,"p":6.18},{"n":"iShares € Govt Bond 1-3yr ETF EUR Acc","i":"IE00B3VTMJ91","c":"RF","r":"Euro gobierno","u":"EUR","q":430.55196762249204,"p":116.32},{"n":"iShares € Cash UCITS ETF EUR Acc","i":"IE000JJPY166","c":"MON","r":"Euro monetario","u":"EUR","q":3836.317135549872,"p":15.64}],"dates":["2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-26","2026-10-27","2026-10-28"],"px":{"IE00B3WJKG14":{"2026-10-19":45.9704,"2026-10-20":45.8601,"2026-10-21":46.5219,"2026-10-22":45.2408,"2026-10-23":45.4473,"2026-10-26":46.1469,"2026-10-27":46.9976,"2026-10-28":47.2992},"IE00BDDRF478":{"2026-10-19":12.3657,"2026-10-20":12.3411,"2026-10-21":12.0978,"2026-10-22":12.013,"2026-10-23":11.8018,"2026-10-26":11.6105,"2026-10-27":11.6328,"2026-10-28":11.6227},"IE00B6R52036":{"2026-10-19":35.9745,"2026-10-20":35.6948,"2026-10-21":35.7237,"2026-10-22":34.0221,"2026-10-23":33.3238,"2026-10-26":33.5622,"2026-10-27":34.5396,"2026-10-28":34.922},"IE00B4L5YX21":{"2026-10-19":73.4636,"2026-10-20":72.6914,"2026-10-21":73.1388,"2026-10-22":72.7923,"2026-10-23":72.553,"2026-10-26":72.2905,"2026-10-27":72.909,"2026-10-28":72.8979},"IE00BKM4GZ66":{"2026-10-19":46.5495,"2026-10-20":46.1009,"2026-10-21":46.4417,"2026-10-22":45.4282,"2026-10-26":45.0386,"2026-10-27":45.6432,"2026-10-28":46.4998},"IE0007987690":{"2026-10-19":41.35,"2026-10-20":41.3,"2026-10-21":41.65,"2026-10-22":41.28,"2026-10-23":41.16,"2026-10-27":41.63,"2026-10-28":41.67},"IE00B52MJY50":{"2026-10-19":217.4331,"2026-10-20":217.227,"2026-10-21":217.7607,"2026-10-22":216.4134,"2026-10-23":217.6322,"2026-10-26":217.6224,"2026-10-27":219.5432,"2026-10-28":219.1698},"IE00B4LN9N13":{"2026-10-19":12.5973,"2026-10-20":12.6176,"2026-10-21":12.7121,"2026-10-22":12.6289,"2026-10-23":12.4808,"2026-10-26":12.6651,"2026-10-27":12.7808,"2026-10-28":12.8353},"IE00BF11F565":{"2026-10-19":5.31,"2026-10-20":5.32,"2026-10-21":5.31,"2026-10-22":5.32,"2026-10-23":5.31,"2026-10-26":5.3,"2026-10-27":5.3,"2026-10-28":5.3},"IE00BF3N7094":{"2026-10-19":6.17,"2026-10-20":6.16,"2026-10-21":6.16,"2026-10-22":6.14,"2026-10-23":6.12,"2026-10-26":6.12,"2026-10-27":6.13,"2026-10-28":6.16},"IE00B3VTMJ91":{"2026-10-19":116.16,"2026-10-20":116.23,"2026-10-21":116.09,"2026-10-22":116.12,"2026-10-23":116.19,"2026-10-26":116.2,"2026-10-27":116.27,"2026-10-28":116.19},"IE000JJPY166":{"2026-10-19":15.65,"2026-10-20":15.65,"2026-10-21":15.65,"2026-10-22":15.65,"2026-10-23":15.65,"2026-10-26":15.65,"2026-10-27":15.66,"2026-10-28":15.66}},"fx":{},"bx":[{},{},{}]};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const F=(n,d=2)=>isFinite(n)&&n!==null?n.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d}):'n/d';
+const P=(n,d=2)=>isFinite(n)&&n!==null?(n>0?'+':'')+F(n,d)+' %':'n/d';
+const E=n=>isFinite(n)?F(n,0)+' €':'n/d';
+const cl=n=>!isFinite(n)?'':n>0?'up':n<0?'dn':'';
+const sum=a=>a.reduce((x,y)=>x+y,0),mean=a=>a.length?sum(a)/a.length:NaN;
+const sd=a=>{if(a.length<2)return NaN;const m=mean(a);return Math.sqrt(sum(a.map(x=>(x-m)**2))/(a.length-1))};
+const cov=(a,b)=>{const ma=mean(a),mb=mean(b);return sum(a.map((x,i)=>(x-ma)*(b[i]-mb)))/(a.length-1)};
+const cor=(a,b)=>cov(a,b)/(sd(a)*sd(b));
+const fd=d=>d.slice(8)+'/'+d.slice(5,7);
+const sh=h=>h.n.replace('iShares ','').replace(' UCITS ETF','').slice(0,20);
+function load(){try{const x=localStorage.getItem(KEY);S=x?JSON.parse(x):null}catch(e){S=null}if(!S)S=JSON.parse(JSON.stringify(SEED))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(db)db.doc('app/state').set({json:JSON.stringify(S)}).catch(()=>{})}
+function th(){const r=document.documentElement;r.dataset.theme=(r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark'?'light':'dark';render()}
+function go(t){T=t;render();scrollTo(0,0)}
+
+function build(){
+ const c=S.cfg,H=S.h,rf=c.rf/100;
+ const D=[...new Set([c.start,...S.dates])].sort();const n=D.length,last=n-1;
+ let lf=c.fx0;const fx=D.map(d=>{const v=d===c.start?c.fx0:S.fx[d];if(v>0)lf=v;return lf});
+ const pr=H.map(h=>{let l=h.p;return D.map(d=>{const v=d===c.start?h.p:(S.px[h.i]||{})[d];if(v>0)l=v;return l})});
+ const val=H.map((h,k)=>D.map((d,t)=>h.q*pr[k][t]/(h.u==='USD'?fx[t]:1)));
+ const inv0=sum(val.map(v=>v[0])),caja=c.capital-inv0;
+ const V=D.map((d,t)=>sum(val.map(v=>v[t]))+caja);
+ const gap=n>1?(Date.parse(D[last])-Date.parse(D[0]))/864e5/(n-1):1,ppy=365/gap;
+ const rt=a=>a.slice(1).map((x,i)=>x/a[i]-1);
+ const bf=S.bx.map(o=>{let f=null;D.forEach(d=>{if(f===null&&o[d]>0)f=o[d]});let l=f;return D.map(d=>{if(o[d]>0)l=o[d];return l})});
+ const ok=bf.map(s=>s[0]!=null);
+ const Bn=bf.map((s,j)=>ok[j]?s.map(x=>x/s[0]*100):null);
+ function M(v,b){const r=rt(v),m={tot:(v[v.length-1]/v[0]-1)*100,vol:sd(r)*Math.sqrt(ppy)*100};
+  m.sh=(mean(r)-rf/ppy)/sd(r)*Math.sqrt(ppy);let pk=v[0],dd=0;v.forEach(x=>{pk=Math.max(pk,x);dd=Math.min(dd,x/pk-1)});m.mdd=dd*100;
+  if(b){const q=rt(b);m.cor=cor(r,q);m.beta=cov(r,q)/Math.pow(sd(q),2);m.al=((mean(r)-rf/ppy)-m.beta*(mean(q)-rf/ppy))*ppy*100;m.te=sd(r.map((x,i)=>x-q[i]))*Math.sqrt(ppy)*100}
+  return m}
+ const mp=M(V,ok[0]?bf[0]:null),mb=bf.map((s,j)=>ok[j]?M(s,null):null);
+ let pk=V[0];const dd=V.map(x=>{pk=Math.max(pk,x);return(x/pk-1)*100});
+ const A=H.map((h,k)=>{const v=val[k],r=rt(v);const a={h,k,tot:(v[last]/v[0]-1)*100,con:(v[last]-v[0])/V[0]*100,w0:v[0]/V[0]*100,w:v[last]/V[last]*100,vol:sd(r)*Math.sqrt(ppy)*100,cb:ok[0]?cor(r,rt(bf[0])):NaN,r,pl:pr[k][last],v0:v[0]};
+  a.rel=a.tot-(mb[0]?mb[0].tot:0);a.s='MANTENER';a.t='ok';a.why='En línea con lo previsto';
+  if(a.w<c.wmin||a.w>c.wmax){a.s='AJUSTAR PESO';a.t='wa';a.why='Peso actual '+F(a.w,1)+' % fuera del rango '+c.wmin+'-'+c.wmax+' %'}
+  else if(a.rel<-5&&a.con<0){a.s='REVISAR';a.t='dn';a.why='Rinde '+F(Math.abs(a.rel),1)+' pp menos que el índice y resta a la cartera'}
+  else if(a.rel>5&&a.w>9){a.s='VIGILAR';a.t='wa';a.why='Gana al índice y su peso roza el máximo ('+F(a.w,1)+' %)'}
+  const tg=a.w0/100*V[last],cur=val[k][last],px=pr[k][last]/(h.u==='USD'?fx[last]:1);a.dq=(tg-cur)/px;return a});
+ const cat={};A.forEach(a=>{cat[a.h.c]=(cat[a.h.c]||0)+val[a.k][last]});
+ const usd=sum(A.filter(a=>a.h.u==='USD').map(a=>val[a.k][last]))/V[last]*100;
+ const chk=[['Entre 10 y 20 activos',H.length>=10&&H.length<=20,H.length+' activos'],
+  ['Pesos iniciales entre '+c.wmin+' y '+c.wmax+' %',A.every(a=>a.w0>=c.wmin-.05&&a.w0<=c.wmax+.05),'mín '+F(Math.min(...A.map(a=>a.w0)),1)+' % · máx '+F(Math.max(...A.map(a=>a.w0)),1)+' %'],
+  ['Pesos actuales dentro del rango',A.every(a=>a.w>=c.wmin&&a.w<=c.wmax),'mín '+F(Math.min(...A.map(a=>a.w)),1)+' % · máx '+F(Math.max(...A.map(a=>a.w)),1)+' %'],
+  ['Máx. 100.000 € por activo (inicial)',A.every(a=>a.v0<=100000.5),'mayor posición '+E(Math.max(...A.map(a=>a.v0)))],
+  ['Inversión inicial ≤ capital',caja>=-1,'caja '+E(caja)]];
+ return{D,n:n-1,V,Bn,bf,ok,mp,mb,A,dd,cat,usd,chk,caja,fx,val}}
+
+const kp=(l,v,s,c)=>`<div class="c k"><span>${l}</span><b class="${c||''}">${v}</b><i>${s||''}</i></div>`;
+const tg=(t,x)=>`<span class="tag t-${t}">${x}</span>`;
+const days=d=>Math.ceil((Date.parse(d)-Date.now())/864e5);
+function vRes(X){const{mp,mb,V,A,n}=X,b=mb[0],last=V.length-1,ex=b?mp.tot-b.tot:NaN;
+ const rv=A.filter(a=>a.s==='REVISAR').length,aj=A.filter(a=>a.s==='AJUSTAR PESO'||a.s==='VIGILAR').length,bad=X.chk.filter(x=>!x[1]).length;
+ return(S.prov?`<div class="ban"><b>Cartera provisional.</b> Estos datos son los de la última versión que conocemos (captura del 18/10). Sustituidlos por la cartera entregada en la pestaña <a href="#" onclick="go('dat');return false">Datos</a>.</div>`:'')+
+ `<div class="g">`+kp('Valor de la cartera',E(V[last]),'Inicio '+E(V[0]))+kp('Rentabilidad total',P(mp.tot),'Índice: '+P(b?b.tot:NaN),cl(mp.tot))+kp('Exceso vs '+esc(S.cfg.bn[0]),P(ex),'puntos porcentuales',cl(ex))+
+ kp('Volatilidad anualizada',isFinite(mp.vol)?F(mp.vol,1)+' %':'n/d','Índice: '+(b&&isFinite(b.vol)?F(b.vol,1)+' %':'n/d'))+kp('Ratio de Sharpe',F(mp.sh),'Índice: '+(b?F(b.sh):'n/d'),cl(mp.sh))+
+ kp('Caída máxima',P(mp.mdd),'desde su máximo',cl(mp.mdd))+kp('Beta · Correlación',F(mp.beta)+' · '+F(mp.cor),'frente al índice')+kp('Alfa anualizado',P(mp.al),'Jensen, orientativo',cl(mp.al))+`</div>`+
+ (n<8?`<p class="mut">Hay solo ${n} observaciones: volatilidad, Sharpe y alfa son poco fiables hasta tener más fechas. Se completarán solas con las actualizaciones diarias.</p>`:'')+
+ `<div class="g2"><div class="c"><h2>Evolución (base 100)</h2><canvas id="c1"></canvas></div><div class="c"><h2>Contribución a la rentabilidad (puntos)</h2><canvas id="c2"></canvas></div></div>`+
+ `<div class="g2"><div class="c"><h2>Estado de la decisión</h2><div class="tl"><span>Activos a revisar</span>${tg(rv?'dn':'ok',rv)}</div><div class="tl"><span>Pesos a ajustar o vigilar</span>${tg(aj?'wa':'ok',aj)}</div><div class="tl"><span>Reglas del concurso incumplidas</span>${tg(bad?'dn':'ok',bad)}</div><div class="tl"><span>Días hasta la ventana (${fd(S.cfg.win1)})</span><b>${days(S.cfg.win1)}</b></div><p><button class="p" onclick="go('dec')">Ir a Decisión →</button></p></div><div class="c"><h2>Reparto por tipo de activo</h2><canvas id="c3"></canvas></div></div>`}
+
+function vEvo(X){const{D,V,Bn,mb,dd}=X;
+ const rows=D.map((d,t)=>`<tr><td>${fd(d)}</td><td>${E(V[t])}</td><td class="${cl(t&&V[t]/V[t-1]-1)}">${t?P((V[t]/V[t-1]-1)*100):'—'}</td><td class="${cl(V[t]-V[0])}">${P((V[t]/V[0]-1)*100)}</td>${Bn.map(s=>`<td>${s?P(s[t]-100):'n/d'}</td>`).join('')}</tr>`).reverse().join('');
+ return`<div class="c"><h2>Cartera frente a los índices (base 100 en la fecha de inicio)</h2><canvas id="c1"></canvas></div><div class="g2"><div class="c"><h2>Caída desde máximos (%)</h2><canvas id="c4"></canvas></div><div class="c"><h2>Lectura rápida</h2><p>Si la línea azul oscura queda <b>por encima</b> del índice, la cartera gana al mercado. Una caída mayor que la del índice indica más riesgo del necesario.</p><p class="mut">Los índices son ETF de referencia (MSCI World y S&amp;P 500, precio de cierre en euros) y se actualizan solos.</p></div></div><div class="c w" style="margin-top:14px"><h2>Histórico</h2><table><tr><th>Fecha</th><th>Valor</th><th>Día</th><th>Acumulado</th>${S.cfg.bn.map(b=>`<th>${esc(b)}</th>`).join('')}</tr>${rows}</table></div>`}
+
+function vPos(X){const{A}=X;
+ const rows=A.map(a=>`<tr><td>${esc(a.h.n)}<br><small>${esc(a.h.i)}</small></td><td>${esc(a.h.c)}</td><td>${esc(a.h.r)}</td><td>${F(a.h.q,0)}</td><td>${F(a.h.p,2)} ${a.h.u}</td><td>${F(a.pl,2)}</td><td class="${cl(a.tot)}">${P(a.tot)}</td><td class="${cl(a.rel)}">${P(a.rel)}</td><td class="${cl(a.con)}">${P(a.con)}</td><td>${F(a.w0,1)} %</td><td>${F(a.w,1)} %</td><td>${tg(a.t,a.s)}</td></tr>`).join('');
+ return`<div class="c w"><h2>Posiciones</h2><table><tr><th>Activo</th><th>Tipo</th><th>Región</th><th>Títulos</th><th>P. compra</th><th>P. actual</th><th>Rent.</th><th>vs índice (pp)</th><th>Contrib. (pp)</th><th>Peso ini.</th><th>Peso act.</th><th>Señal</th></tr>${rows}</table></div><div class="g2"><div class="c"><h2>Rentabilidad por activo (%)</h2><canvas id="c5"></canvas></div><div class="c"><h2>Peso inicial frente a actual (%)</h2><canvas id="c6"></canvas></div></div>`}
+
+function vRis(X){const{A,mp,mb,n}=X;
+ const r=(l,f)=>`<tr><td>${l}</td><td>${f(mp)}</td>${mb.map(m=>`<td>${m?f(m):'n/d'}</td>`).join('')}</tr>`;
+ const sm=A.length&&n>=5?`<div class="c w" style="margin-top:14px"><h2>Correlación entre activos (rentabilidades diarias)</h2><table><tr><th></th>${A.map(a=>`<th>${esc(sh(a.h).slice(0,9))}</th>`).join('')}</tr>${A.map(a=>`<tr><td>${esc(sh(a.h))}</td>${A.map(b=>{const c=cor(a.r,b.r);return`<td style="background:rgba(37,99,235,${isFinite(c)?Math.max(0,Math.abs(c)*.55):0});color:${Math.abs(c)>.6?'#fff':'inherit'}">${F(c,2)}</td>`}).join('')}</tr>`).join('')}</table><p class="mut">Cuanto más oscuro, más se mueven juntos: eso resta diversificación.</p></div>`:`<p class="mut">La matriz de correlaciones aparece con 5 o más observaciones.</p>`;
+ const cat=Object.entries(X.cat).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${E(v)}</td><td>${F(v/X.V[X.V.length-1]*100,1)} %</td></tr>`).join('');
+ return`<div class="c w"><h2>Métricas de riesgo y rentabilidad ajustada</h2><table><tr><th></th><th>Cartera</th>${S.cfg.bn.map(b=>`<th>${esc(b)}</th>`).join('')}</tr>${r('Rentabilidad',m=>P(m.tot))}${r('Volatilidad anual.',m=>isFinite(m.vol)?F(m.vol,1)+' %':'n/d')}${r('Sharpe',m=>F(m.sh))}${r('Caída máxima',m=>P(m.mdd))}${r('Beta (vs índice 1)',m=>m.beta==null?'—':F(m.beta))}${r('Correlación (vs índice 1)',m=>m.cor==null?'—':F(m.cor))}${r('Alfa anualizado',m=>m.al==null?'—':P(m.al))}${r('Tracking error',m=>m.te==null?'—':F(m.te,1)+' %')}</table></div>
+ <div class="g2"><div class="c w"><h2>Riesgo por activo</h2><table><tr><th>Activo</th><th>Volatilidad</th><th>Corr. vs índice</th></tr>${A.map(a=>`<tr><td>${esc(sh(a.h))}</td><td>${isFinite(a.vol)?F(a.vol,1)+' %':'n/d'}</td><td>${F(a.cb,2)}</td></tr>`).join('')}</table></div><div class="c w"><h2>Exposiciones</h2><table><tr><th>Tipo</th><th>Importe</th><th>Peso</th></tr>${cat}</table><p>Exposición a líneas en dólares: <b>${F(X.usd,1)} %</b></p><p class="mut">La concentración principal de la cartera está en renta variable de EE. UU. (tecnología y comunicación). Vigilad que no dominen la volatilidad.</p></div></div>${sm}`}
+
+function vDec(X){const{A,chk,mp,mb}=X,b=mb[0];
+ const ev=[[S.cfg.start,'Inicio de la cartera'],['2026-10-29','Reunión del BCE (tipos)'],[S.cfg.win1,'1.ª ventana de cambios'],[S.cfg.win2,'2.ª ventana de cambios'],['2026-12-17','Reunión del BCE'],[S.cfg.end,'Cierre de cartera'],['2027-02-11','Sesión final y premios']].map(x=>`<div class="tl"><span>${fd(x[0])}/${x[0].slice(0,4)} · ${x[1]}</span><b class="${days(x[0])<0?'mut':''}">${days(x[0])<0?'pasado':'en '+days(x[0])+' d'}</b></div>`).join('');
+ const cmp=b?[['Sharpe (peso 40 %)',mp.sh,b.sh,1,40],['Volatilidad (25 %)',mp.vol,b.vol,0,25],['Alfa (25 %)',mp.al,0,1,25],['Correlación (10 %)',mp.cor,b.cor==null?mp.cor:.999,0,10]]:[];
+ let pts=0;const cr=cmp.map(c=>{const g=isFinite(c[1])&&(c[3]?c[1]>c[2]:c[1]<c[2]);if(g)pts+=c[4];return`<tr><td>${c[0]}</td><td>${F(c[1])}</td><td>${c[0].startsWith('Alfa')?'0':F(c[2])}</td><td>${tg(g?'ok':'wa',g?'mejor':'peor')}</td></tr>`}).join('');
+ return`<div class="g2"><div class="c"><h2>1 · Reglas del concurso</h2>${chk.map(x=>`<div class="tl"><span>${x[0]}<br><small>${x[2]}</small></span>${tg(x[1]?'ok':'dn',x[1]?'OK':'REVISAR')}</div>`).join('')}</div><div class="c"><h2>Calendario</h2>${ev}<p class="mut">Contexto a 13/10: depósito del BCE 2,50 %, inflación de la zona euro 3,3 %. Actualizad este dato antes de decidir.</p></div></div>
+ <div class="c w" style="margin-top:14px"><h2>2 · Señal por activo</h2><table><tr><th>Activo</th><th>Rent.</th><th>vs índice</th><th>Peso</th><th>Señal</th><th style="text-align:left">Motivo</th></tr>${A.map(a=>`<tr><td>${esc(sh(a.h))}</td><td class="${cl(a.tot)}">${P(a.tot)}</td><td class="${cl(a.rel)}">${P(a.rel)}</td><td>${F(a.w,1)} %</td><td>${tg(a.t,a.s)}</td><td style="text-align:left">${a.why}</td></tr>`).join('')}</table><p class="mut">Reglas de las señales: REVISAR = rinde más de 5 pp por debajo del índice y resta; AJUSTAR = peso fuera de 5-10 %; VIGILAR = gana más de 5 pp y pesa más del 9 %. Son avisos, no órdenes.</p></div>
+ <div class="g2"><div class="c w"><h2>3 · Cartera frente al índice (estimación de la categoría 2)</h2><table><tr><th>Métrica</th><th>Cartera</th><th>Índice</th><th></th></tr>${cr}</table><p>Puntos estimados frente al índice: <b>${pts} / 100</b></p><p class="mut">Solo orienta: la clasificación real depende de las demás carteras y de cómo calcule ISEFI.</p></div>
+ <div class="c w"><h2>4 · Rebalanceo a pesos iniciales</h2><table><tr><th>Activo</th><th>Acción</th><th>Títulos</th></tr>${A.map(a=>`<tr><td>${esc(sh(a.h))}</td><td>${Math.abs(a.dq)<1?'—':a.dq>0?'Comprar':'Vender'}</td><td>${Math.abs(a.dq)<1?'—':F(Math.abs(a.dq),0)}</td></tr>`).join('')}</table><p class="mut">Cuántos títulos mover para volver a los pesos de partida (a precios actuales).</p></div></div>
+ <div class="c" style="margin-top:14px"><h2>5 · Cómo decidir el 13/11</h2><ol><li><b>¿Se rompe alguna regla?</b> Si sí, hay que corregirlo.</li><li><b>¿Qué activos restan y por qué?</b> Distinguid un motivo de fondo (tipos, sector) del ruido de pocas semanas.</li><li><b>¿Cómo va la cartera frente al índice</b> en Sharpe, volatilidad, alfa y correlación? Son los criterios de la categoría 2.</li><li><b>¿El cambio mejora esas 4 métricas</b> o solo persigue lo que acaba de subir?</li><li>Solo hay dos ventanas: no gastéis una en cambios pequeños.</li></ol></div>`}
+
+function vDat(){const H=S.h,c=S.cfg,today=new Date().toISOString().slice(0,10);
+ const inp=(id,l,v,t)=>`<div><label>${l}</label><input id="${id}" type="${t||'text'}" value="${esc(v)}"></div>`;
+ return`<div class="c"><h2>Añadir un día de precios</h2><p class="mut">Precio de cada activo en euros, igual que en la cartera entregada: si cotiza en dólares, dividid el precio en USD entre el tipo de cambio del Banco de España de ese día. Dejad en blanco lo que no tengáis.</p><div class="f">${inp('f_d','Fecha',today,'date')}${inp('f_fx','EUR/USD','')}${H.map((h,i)=>inp('f_p'+i,esc(sh(h)),'')).join('')}${c.bn.map((b,j)=>inp('f_b'+j,'Índice: '+esc(b),'')).join('')}</div><button class="p" onclick="addDay()">Guardar día</button></div>
+ <div class="c" style="margin-top:14px"><h2>Pegar varios días (desde Excel)</h2><p class="mut">Una fila por día, separada por tabulador o «;»: fecha (dd/mm/aaaa), EUR/USD, un precio por activo en el orden de la cartera, y los 3 índices.</p><textarea id="paste"></textarea><button class="p" onclick="imp()">Importar</button></div>
+ <div class="c w" style="margin-top:14px"><h2>Cartera y parámetros</h2><table><tr><th>Activo</th><th>ISIN</th><th>Tipo</th><th>Región</th><th>Divisa</th><th>Títulos</th><th>P. compra</th><th></th></tr>${H.map((h,i)=>`<tr><td><input id="h_n${i}" value="${esc(h.n)}"></td><td><input id="h_i${i}" value="${esc(h.i)}"></td><td><select id="h_c${i}">${['RV','RF','MON'].map(o=>`<option ${o===h.c?'selected':''}>${o}</option>`).join('')}</select></td><td><input id="h_r${i}" value="${esc(h.r)}"></td><td><select id="h_u${i}">${['EUR','USD'].map(o=>`<option ${o===h.u?'selected':''}>${o}</option>`).join('')}</select></td><td><input id="h_q${i}" value="${h.q}"></td><td><input id="h_p${i}" value="${h.p}"></td><td><button class="p s" onclick="delH(${i})">✕</button></td></tr>`).join('')}</table><button class="p s" onclick="addH()">+ Añadir activo</button>
+ <div class="f" style="margin-top:12px">${inp('s_st','Fecha de inicio',c.start,'date')}${inp('s_cap','Capital (€)',c.capital)}${inp('s_fx','EUR/USD de compra',c.fx0)}${inp('s_rf','Tasa libre de riesgo (%)',c.rf)}${inp('s_wi','Peso mín. (%)',c.wmin)}${inp('s_wa','Peso máx. (%)',c.wmax)}${inp('s_w1','1.ª ventana',c.win1,'date')}${inp('s_w2','2.ª ventana',c.win2,'date')}${inp('s_en','Cierre',c.end,'date')}${c.bn.map((b,j)=>inp('s_b'+j,'Índice '+(j+1),b)).join('')}</div><button class="p" onclick="saveC()">Guardar cartera y parámetros</button></div>
+ <div class="c" style="margin-top:14px"><h2>Copia de seguridad</h2><textarea id="bk" readonly>${esc(JSON.stringify(S))}</textarea><textarea id="rs" placeholder="Pegad aquí una copia para restaurar"></textarea><button class="p s" onclick="rest()">Restaurar</button></div>`}
+const num=v=>parseFloat(String(v).replace(',','.'));
+const iso=s=>{s=s.trim();return s.includes('/')?s.split('/').reverse().join('-').replace(/-(\d)(?=-|$)/g,'-0$1'):s};
+function addDay(){const d=$('#f_d').value;if(!d)return;const fv=num($('#f_fx').value);if(fv>0)S.fx[d]=fv;
+ S.h.forEach((h,i)=>{const v=num($('#f_p'+i).value);if(v>0){(S.px[h.i]=S.px[h.i]||{})[d]=v}});
+ S.cfg.bn.forEach((b,j)=>{const v=num($('#f_b'+j).value);if(v>0)S.bx[j][d]=v});
+ if(!S.dates.includes(d))S.dates.push(d);save();go('evo')}
+function imp(){$('#paste').value.split('\n').forEach(l=>{const c=l.split(/[\t;]/);if(c.length<3)return;const d=iso(c[0]);if(!/^\d{4}-\d\d-\d\d$/.test(d))return;
+ const fv=num(c[1]);if(fv>0)S.fx[d]=fv;S.h.forEach((h,i)=>{const v=num(c[2+i]);if(v>0)(S.px[h.i]=S.px[h.i]||{})[d]=v});S.cfg.bn.forEach((b,j)=>{const v=num(c[2+S.h.length+j]);if(v>0)S.bx[j][d]=v});if(!S.dates.includes(d))S.dates.push(d)});save();go('evo')}
+function addH(){S.h.push({n:'Nuevo activo',i:'',c:'RV',r:'',u:'EUR',q:0,p:1});render()}
+function delH(i){S.h.splice(i,1);render()}
+function saveC(){S.h=S.h.map((h,i)=>({n:$('#h_n'+i).value,i:$('#h_i'+i).value.trim(),c:$('#h_c'+i).value,r:$('#h_r'+i).value,u:$('#h_u'+i).value,q:num($('#h_q'+i).value)||0,p:num($('#h_p'+i).value)||1}));
+ const c=S.cfg;c.start=$('#s_st').value||c.start;c.capital=num($('#s_cap').value)||c.capital;c.fx0=num($('#s_fx').value)||c.fx0;c.rf=num($('#s_rf').value);c.wmin=num($('#s_wi').value);c.wmax=num($('#s_wa').value);c.win1=$('#s_w1').value;c.win2=$('#s_w2').value;c.end=$('#s_en').value;c.bn=c.bn.map((b,j)=>$('#s_b'+j).value);S.prov=0;save();go('res')}
+function rest(){try{S=JSON.parse($('#rs').value);save();go('res')}catch(e){alert('No se ha podido leer la copia.')}}
+
+function mk(id,cfg){const e=document.getElementById(id);if(!e)return;if(CH[id])CH[id].destroy();CH[id]=new Chart(e,cfg)}
+function charts(X){const st=getComputedStyle(document.documentElement),g=v=>st.getPropertyValue(v).trim();Chart.defaults.color=g('--mut');Chart.defaults.borderColor=g('--line');Chart.defaults.font.family="'IBM Plex Sans',system-ui,sans-serif";
+ const L=X.D.map(fd),cs=[g('--b2'),g('--mut'),g('--b3'),g('--wa')],pt=X.D.length<40?3:0;
+ const ds=[{label:'Cartera',data:X.V.map(v=>v/X.V[0]*100),borderColor:g('--b1'),backgroundColor:g('--b1'),borderWidth:3,tension:.2,pointRadius:pt}];
+ X.Bn.forEach((s,j)=>{if(s)ds.push({label:S.cfg.bn[j],data:s,borderColor:cs[j+1],backgroundColor:cs[j+1],borderWidth:1.6,borderDash:j?[5,4]:[],tension:.2,pointRadius:pt})});
+ const line={type:'line',data:{labels:L,datasets:ds},options:{responsive:true,interaction:{mode:'index',intersect:false}}};
+ mk('c1',line);
+ mk('c2',{type:'bar',data:{labels:X.A.map(a=>sh(a.h)),datasets:[{data:X.A.map(a=>a.con),backgroundColor:X.A.map(a=>a.con>=0?g('--b2'):g('--dn'))}]},options:{indexAxis:'y',plugins:{legend:{display:false}}}});
+ const ck=Object.keys(X.cat);mk('c3',{type:'doughnut',data:{labels:ck,datasets:[{data:ck.map(k=>X.cat[k]),backgroundColor:[g('--b1'),g('--b3'),'#94A3B8','#CBD5E1','#1E3A8A']}]},options:{plugins:{legend:{position:'bottom'}}}});
+ mk('c4',{type:'line',data:{labels:L,datasets:[{label:'Caída',data:X.dd,borderColor:g('--dn'),backgroundColor:g('--dn')+'33',fill:true,tension:.2,pointRadius:pt}]},options:{plugins:{legend:{display:false}}}});
+ mk('c5',{type:'bar',data:{labels:X.A.map(a=>sh(a.h)),datasets:[{label:'Activo',data:X.A.map(a=>a.tot),backgroundColor:g('--b2')},{label:S.cfg.bn[0],data:X.A.map(()=>X.mb[0]?X.mb[0].tot:0),backgroundColor:g('--mut')}]},options:{indexAxis:'y'}});
+ mk('c6',{type:'bar',data:{labels:X.A.map(a=>sh(a.h)),datasets:[{label:'Inicial',data:X.A.map(a=>a.w0),backgroundColor:g('--b3')},{label:'Actual',data:X.A.map(a=>a.w),backgroundColor:g('--b1')}]}})}
+const TABS=[['res','Resumen'],['evo','Evolución'],['pos','Posiciones'],['ris','Riesgo'],['dec','Decisión']];
+function render(){$('#nav').innerHTML=TABS.map(t=>`<button class="${t[0]===T?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');
+ const X=build();$('#m').innerHTML=({res:vRes,evo:vEvo,pos:vPos,ris:vRis,dec:vDec,dat:vDat})[T](X);
+ if(T!=='dat'&&window.Chart)charts(X)}
+fetch('data.json?'+Date.now()).then(r=>r.json()).then(j=>{S=j;render();const m=j.meta||{};st('Datos hasta '+(j.dates.length?fd(j.dates[j.dates.length-1]):'—')+' · última actualización '+(m.updated?new Date(m.updated).toLocaleString('es-ES'):'—')+' · fuentes: Finect, BCE')}).catch(e=>{S=SEED;render();st('No se pudo leer data.json: se muestran los datos iniciales')});
+</script></body></html>

@@ -1,0 +1,149 @@
+{
+ "cfg": {
+  "start": "2026-10-18",
+  "capital": 1000000,
+  "fx0": 1,
+  "rf": 2.4,
+  "wmin": 5,
+  "wmax": 10,
+  "win1": "2026-11-13",
+  "win2": "2026-12-11",
+  "end": "2027-01-29",
+  "bn": [
+   "MSCI World (ETF IWDA)",
+   "S&P 500 (ETF SXR8)"
+  ]
+ },
+ "h": [
+  {
+   "n": "iShares S&P 500 Information Tech Sector UCITS ETF USD (Acc)",
+   "i": "IE00B3WJKG14",
+   "c": "RV",
+   "r": "EE. UU.",
+   "u": "EUR",
+   "q": 2127.518053971874,
+   "p": 46.69,
+   "url": "https://www.finect.com/etfs/IE00B3WJKG14-Ishares_sp_500_info_tech_sect_etfacc"
+  },
+  {
+   "n": "iShares S&P 500 Communication Sector ETF",
+   "i": "IE00BDDRF478",
+   "c": "RV",
+   "r": "EE. UU.",
+   "u": "EUR",
+   "q": 7979.330007127584,
+   "p": 12.41,
+   "url": "https://www.finect.com/etfs/IE00BDDRF478-Ishares_sp_500_comm_sect_etf_usd_acc"
+  },
+  {
+   "n": "iShares Gold Producers UCITS ETF USD (Acc)",
+   "i": "IE00B6R52036",
+   "c": "RV",
+   "r": "Global (mineras)",
+   "u": "EUR",
+   "q": 1404.4943820224719,
+   "p": 36.34,
+   "url": "https://www.finect.com/etfs/IE00B6R52036-Ishares_gold_producers_etf_usd_acc"
+  },
+  {
+   "n": "iShares Core MSCI Japan IMI UCITS ETF USD (Acc)",
+   "i": "IE00B4L5YX21",
+   "c": "RV",
+   "r": "Japón",
+   "u": "EUR",
+   "q": 1346.82085239586,
+   "p": 73.8,
+   "url": "https://www.finect.com/etfs/IE00B4L5YX21-Ishares_core_msci_japan_imi_etf_usd_acc"
+  },
+  {
+   "n": "iShares Core MSCI EM IMI UCITS ETF USD (Acc)",
+   "i": "IE00BKM4GZ66",
+   "c": "RV",
+   "r": "Emergentes",
+   "u": "EUR",
+   "q": 2089.009143496921,
+   "p": 46.35,
+   "url": "https://www.finect.com/etfs/IE00BKM4GZ66-Ishares_core_msci_em_imi_etf_usd_acc"
+  },
+  {
+   "n": "Vanguard European Stock Index Fund Investor EUR Acc",
+   "i": "IE0007987690",
+   "c": "RV",
+   "r": "Europa",
+   "u": "EUR",
+   "q": 2393.89163164752,
+   "p": 41.51,
+   "url": "https://www.finect.com/fondos-inversion/IE0007987690-Vanguard_european_stock_idx_inv_eur_acc"
+  },
+  {
+   "n": "iShares Core MSCI Pacific ex-Japan ETF USD Acc",
+   "i": "IE00B52MJY50",
+   "c": "RV",
+   "r": "Asia-Pacífico",
+   "u": "EUR",
+   "q": 458.118403051283,
+   "p": 216.88,
+   "url": "https://www.finect.com/etfs/IE00B52MJY50-Ishares_core_msci_pac_exjpn_etf_usd_acc"
+  },
+  {
+   "n": "iShares S&P 500 Industrials Sector UCITS ETF USD (Acc)",
+   "i": "IE00B4LN9N13",
+   "c": "RV",
+   "r": "EE. UU.",
+   "u": "EUR",
+   "q": 3950.24700070572,
+   "p": 12.7,
+   "url": "https://www.finect.com/etfs/IE00B4LN9N13-Ishares_sp_500_indstr_sect_etf_usd_acc"
+  },
+  {
+   "n": "iShares Core € Corp Bond UCITS ETF EUR (Acc)",
+   "i": "IE00BF11F565",
+   "c": "RF",
+   "r": "Euro crédito",
+   "u": "EUR",
+   "q": 18630.3917137476,
+   "p": 5.33,
+   "url": "https://www.finect.com/etfs/IE00BF11F565-Ishares_core__corp_bond_etf_eur_acc"
+  },
+  {
+   "n": "iShares € High Yield Corp Bond UCITS ETF EUR (Acc)",
+   "i": "IE00BF3N7094",
+   "c": "RF",
+   "r": "Euro high yield",
+   "u": "EUR",
+   "q": 14586.709886547813,
+   "p": 6.18,
+   "url": "https://www.finect.com/etfs/IE00BF3N7094-Ishares__high_yield_corpbd_etf_eur_acc"
+  },
+  {
+   "n": "iShares € Govt Bond 1-3yr ETF EUR Acc",
+   "i": "IE00B3VTMJ91",
+   "c": "RF",
+   "r": "Euro gobierno",
+   "u": "EUR",
+   "q": 430.55196762249204,
+   "p": 116.32,
+   "url": "https://www.finect.com/etfs/IE00B3VTMJ91-Ishares__govt_bond_13yr_etf_eur_acc"
+  },
+  {
+   "n": "iShares € Cash UCITS ETF EUR Acc",
+   "i": "IE000JJPY166",
+   "c": "MON",
+   "r": "Euro monetario",
+   "u": "EUR",
+   "q": 3836.317135549872,
+   "p": 15.64,
+   "url": "https://www.finect.com/etfs/IE000JJPY166-Ishares_eur_cash_etf_eur_acc"
+  }
+ ],
+ "benchmarks": [
+  {
+   "name": "MSCI World (ETF IWDA)",
+   "yahoo": "IWDA.AS"
+  },
+  {
+   "name": "S&P 500 (ETF SXR8)",
+   "yahoo": "SXR8.DE"
+  }
+ ]
+}
