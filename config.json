@@ -10,8 +10,8 @@
   "win2": "2026-12-11",
   "end": "2027-01-29",
   "bn": [
-   "MSCI World (ETF IWDA)",
-   "S&P 500 (ETF SXR8)"
+   "MSCI World (iShares Core MSCI World)",
+   "S&P 500 (iShares Core S&P 500)"
   ]
  },
  "h": [
@@ -138,12 +138,14 @@
  ],
  "benchmarks": [
   {
-   "name": "MSCI World (ETF IWDA)",
-   "yahoo": "IWDA.AS"
+   "name": "MSCI World (iShares Core MSCI World)",
+   "isin": "IE00B4L5Y983",
+   "url": "https://www.finect.com/etfs/IE00B4L5Y983"
   },
   {
-   "name": "S&P 500 (ETF SXR8)",
-   "yahoo": "SXR8.DE"
+   "name": "S&P 500 (iShares Core S&P 500)",
+   "isin": "IE00B5BMR087",
+   "url": "https://www.finect.com/etfs/IE00B5BMR087"
   }
  ]
 }
