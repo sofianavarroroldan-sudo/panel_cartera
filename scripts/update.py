@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Actualiza data.json: ultimo valor liquidativo de cada activo (Finect), tipo de cambio
-USD/EUR del BCE e indices de referencia (primero Finect y, si falla, respaldo en Yahoo Finance).
-Si algo falla, avisa en el log y NO borra datos anteriores."""
+"""Actualiza data.json sin sobrescribir nunca datos existentes:
+1. Intenta leer el ultimo valor de Finect (12 activos y 2 indices) si la fecha no existe.
+2. Busca en Yahoo Finance desde la fecha de inicio para rellenar solo los huecos o fallos de Finect."""
 import csv, datetime as dt, io, json, re, time
 from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
+import yfinance as yf
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
@@ -27,17 +28,15 @@ UA = {
     "Upgrade-Insecure-Requests": "1"
 }
 
-# Direcciones completas en Finect por si en config.json figuran sin el nombre final
 FINECT_URL_FIX = {
     "https://www.finect.com/etfs/IE00B4L5Y983": "https://www.finect.com/etfs/IE00B4L5Y983-Ishares_core_msci_world_etf_usd_acc",
     "https://www.finect.com/etfs/IE00B5BMR087": "https://www.finect.com/etfs/IE00B5BMR087-Ishares_core_sp_500_etf_usd_acc",
 }
 
-# Tickers de respaldo en Yahoo Finance (en euros) para cada indice por posicion
-YF_FALLBACK = {
-    0: "IWDA.AS",
-    1: "SXR8.DE",
-}
+YF_BENCHMARKS = [
+    ("MSCI World (ETF IWDA)", "IWDA.AS"),
+    ("S&P 500 (ETF SXR8)", "SXR8.DE"),
+]
 
 MIN_COVERAGE = 0.5
 log = []
@@ -57,7 +56,6 @@ def clean(html):
 
 def parse_finect(html):
     text = clean(html)
-
     m = DATE.search(text)
     d = None
     if m:
@@ -65,7 +63,6 @@ def parse_finect(html):
         month = m.group(2).zfill(2)
         year = m.group(3)
         d = f"{year}-{month}-{day}"
-
         prices = PRICE.findall(text[max(0, m.start() - 300):m.start()])
         if prices:
             num, cur = prices[-1]
@@ -86,11 +83,6 @@ def parse_finect(html):
 
     return None
 
-def diagnose(name, r):
-    text = clean(r.text)
-    say(f"  [DIAGNOSTICO {name}] HTTP {r.status_code} | Longitud texto: {len(text)} chars")
-    say(f"  Muestra inicial: {text[:220]!r}")
-
 def ecb_usd(start):
     r = requests.get(
         "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A",
@@ -106,26 +98,69 @@ def fx_on(fx, d):
     ks = [k for k in fx if k <= d]
     return fx[max(ks)] if ks else None
 
-def fallback_yahoo(j, b_name, start, bx_dict):
-    ticker = YF_FALLBACK.get(j)
-    if not ticker:
-        return False
+def fetch_yahoo_isin(isin, start, fx, existing_px):
+    """Busca el activo por ISIN en Yahoo Finance y devuelve la serie en EUR validada."""
+    ref = existing_px[max(existing_px)] if existing_px else None
+    candidates = []
     try:
-        import yfinance as yf
-        hist = yf.Ticker(ticker).history(start=start)
-        if not hist.empty and "Close" in hist:
-            nuevos = 0
-            for idx_dt, val in hist["Close"].dropna().items():
-                d = idx_dt.strftime("%Y-%m-%d")
-                price = round(float(val), 4)
-                if d >= start and bx_dict.get(d) != price:
-                    bx_dict[d] = price
-                    nuevos += 1
-            say(f"Indice {b_name} (respaldo Yahoo {ticker}): {nuevos} precios nuevos")
-            return nuevos > 0
-    except Exception as e:
-        say(f"AVISO respaldo Yahoo {b_name}: {e}")
-    return False
+        r = requests.get(
+            "https://query2.finance.yahoo.com/v1/finance/search",
+            params={"q": isin, "quotesCount": 6, "newsCount": 0},
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=15
+        )
+        if r.ok:
+            quotes = r.json().get("quotes", [])
+            eur_sufs = (".DE", ".AS", ".PA", ".MC", ".F", ".MI")
+            eur_q = [q["symbol"] for q in quotes if "symbol" in q and q["symbol"].endswith(eur_sufs)]
+            other_q = [q["symbol"] for q in quotes if "symbol" in q and not q["symbol"].endswith(eur_sufs)]
+            candidates.extend(eur_q + other_q)
+    except Exception:
+        pass
+    candidates.append(isin)
+
+    seen = set()
+    for sym in candidates:
+        if sym in seen:
+            continue
+        seen.add(sym)
+        try:
+            t = yf.Ticker(sym)
+            hist = t.history(start=start)
+            if hist.empty or "Close" not in hist:
+                continue
+            cur = None
+            try:
+                cur = t.fast_info.get("currency")
+            except Exception:
+                pass
+
+            raw = {idx_dt.strftime("%Y-%m-%d"): float(val)
+                   for idx_dt, val in hist["Close"].dropna().items()
+                   if idx_dt.strftime("%Y-%m-%d") > start}
+            if not raw:
+                continue
+
+            # Probar en EUR directo y convertido desde USD con BCE
+             variantes = []
+            if cur == "USD":
+                variantes.append({d: round(v / fx_on(fx, d), 4) for d, v in raw.items() if fx_on(fx, d)})
+                variantes.append({d: round(v, 4) for d, v in raw.items()})
+            else:
+                variantes.append({d: round(v, 4) for d, v in raw.items()})
+                variantes.append({d: round(v / fx_on(fx, d), 4) for d, v in raw.items() if fx_on(fx, d)})
+
+            for serie in variantes:
+                if not serie:
+                    continue
+                if ref is None:
+                    return sym, serie
+                sample = serie[max(serie)]
+                if abs(sample - ref) / ref <= 0.20:
+                    return sym, serie
+        except Exception:
+            continue
+    return None, {}
 
 def main():
     data = json.loads(DATA.read_text(encoding="utf-8"))
@@ -142,76 +177,93 @@ def main():
         fx = {}
         say(f"AVISO: no se pudo leer el tipo de cambio del BCE ({e})")
 
-    # 1. Fondos de la cartera en Finect
+    # 1. Activos de la cartera: primero Finect y luego relleno de huecos con Yahoo Finance
     for h in CFG["h"]:
         isin = h["i"]
+        px = data["px"].setdefault(isin, {})
+
+        # 1a. Intentar Finect para el ultimo valor disponible
         try:
             time.sleep(1.2)
             url = FINECT_URL_FIX.get(h["url"], h["url"])
             r = session.get(url, timeout=30)
             r.raise_for_status()
             res = parse_finect(r.text)
-            if not res:
-                say(f"AVISO {isin}: no se encontro el valor liquidativo")
-                diagnose(isin, r)
-                continue
-
-            price, cur, d = res
-            if cur == "$":
-                rate = fx_on(fx, d)
-                if not rate:
-                    say(f"AVISO {isin}: sin tipo de cambio para {d}")
-                    continue
-                price = price / rate
-            price = round(price, 4)
-
-            if d > start:
-                px = data["px"].setdefault(isin, {})
-                if px.get(d) != price:
-                    px[d] = price
-                    changed = True
-                    say(f"{isin}: {d} = {price} EUR")
+            if res:
+                price, cur, d = res
+                if cur == "$":
+                    rate = fx_on(fx, d)
+                    price = (price / rate) if rate else None
+                if price is not None:
+                    price = round(price, 4)
+                    if d > start and d not in px:
+                        px[d] = price
+                        changed = True
+                        say(f"{isin} (Finect): {d} = {price} EUR")
+            else:
+                say(f"AVISO {isin}: sin dato hoy en Finect, buscando en Yahoo...")
         except Exception as e:
-            say(f"AVISO {isin}: {e}")
+            say(f"AVISO {isin} en Finect ({e}), buscando en Yahoo...")
 
-    # 2. Indices de referencia: primero Finect y, si falla, respaldo en Yahoo Finance
+        # 1b. Rellenar huecos del historico (o el dia actual si fallo Finect) con Yahoo Finance
+        sym, y_serie = fetch_yahoo_isin(isin, start, fx, px)
+        if y_serie:
+            nuevos = 0
+            for d, val in y_serie.items():
+                if d > start and d not in px:
+                    px[d] = val
+                    changed = True
+                    nuevos += 1
+            if nuevos > 0:
+                say(f"{isin} (Yahoo {sym}): {nuevos} fechas vacias rellenadas")
+
+    # 2. Indices de referencia: primero Finect y luego relleno de huecos con Yahoo Finance
     benchmarks = CFG.get("benchmarks", [])
-    data.setdefault("bx", [{} for _ in benchmarks])
-    for j, b in enumerate(benchmarks):
-        finect_ok = False
-        if "url" in b:
-            try:
-                time.sleep(1.2)
-                url = FINECT_URL_FIX.get(b["url"], b["url"])
-                r = session.get(url, timeout=30)
-                r.raise_for_status()
-                res = parse_finect(r.text)
-                if res:
-                    price, cur, d = res
-                    if cur == "$":
-                        rate = fx_on(fx, d)
-                        if rate:
-                            price = round(price / rate, 4)
-                            finect_ok = True
-                        else:
-                            say(f"AVISO indice {b['name']}: sin tipo de cambio para {d}")
-                    else:
-                        price = round(price, 4)
-                        finect_ok = True
+    num_bx = max(len(benchmarks), len(YF_BENCHMARKS))
+    data.setdefault("bx", [{} for _ in range(num_bx)])
+    while len(data["bx"]) < num_bx:
+        data["bx"].append({})
 
-                    if finect_ok and d >= start and data["bx"][j].get(d) != price:
+    # 2a. Intentar Finect para el dia actual
+    for j, b in enumerate(benchmarks):
+        if "url" not in b:
+            continue
+        try:
+            time.sleep(1.2)
+            url = FINECT_URL_FIX.get(b["url"], b["url"])
+            r = session.get(url, timeout=30)
+            r.raise_for_status()
+            res = parse_finect(r.text)
+            if res:
+                price, cur, d = res
+                if cur == "$":
+                    rate = fx_on(fx, d)
+                    price = (price / rate) if rate else None
+                if price is not None:
+                    price = round(price, 4)
+                    if d >= start and d not in data["bx"][j]:
                         data["bx"][j][d] = price
                         changed = True
                         say(f"Indice {b['name']} (Finect): {d} = {price} EUR")
-                else:
-                    say(f"AVISO indice {b['name']}: no se encontro valor en Finect, probando Yahoo...")
-                    diagnose(b["name"], r)
-            except Exception as e:
-                say(f"AVISO indice {b['name']} en Finect ({e}), probando Yahoo...")
+        except Exception as e:
+            say(f"AVISO indice {b.get('name', j)} en Finect: {e}")
 
-        if not finect_ok:
-            if fallback_yahoo(j, b.get("name", f"#{j}"), start, data["bx"][j]):
-                changed = True
+    # 2b. Rellenar fechas vacias de los indices en Yahoo Finance
+    for j, (b_name, ticker) in enumerate(YF_BENCHMARKS):
+        try:
+            hist = yf.Ticker(ticker).history(start=start)
+            if not hist.empty and "Close" in hist:
+                rellenados = 0
+                for idx_dt, val in hist["Close"].dropna().items():
+                    d = idx_dt.strftime("%Y-%m-%d")
+                    if d >= start and d not in data["bx"][j]:
+                        data["bx"][j][d] = round(float(val), 4)
+                        changed = True
+                        rellenados += 1
+                if rellenados > 0:
+                    say(f"Indice {b_name} (Yahoo {ticker}): {rellenados} huecos rellenados")
+        except Exception as e:
+            say(f"AVISO relleno Yahoo en {b_name}: {e}")
 
     # 3. Cobertura de fechas
     ids = [h["i"] for h in CFG["h"]]
