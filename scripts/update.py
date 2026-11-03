@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Actualiza data.json sin sobrescribir nunca datos existentes:
-1. Intenta leer el ultimo valor de Finect (12 activos y 2 indices) si la fecha no existe.
-2. Busca en Yahoo Finance desde la fecha de inicio para rellenar solo los huecos o fallos de Finect."""
+1. Intenta leer el ultimo valor de Finect (12 activos y 2 indices) si la fecha esta vacia.
+2. Rellena con Yahoo Finance cualquier fecha vacia desde el inicio (18/10) para que las curvas y ratios funcionen."""
 import csv, datetime as dt, io, json, re, time
 from pathlib import Path
 import requests
@@ -141,8 +141,7 @@ def fetch_yahoo_isin(isin, start, fx, existing_px):
             if not raw:
                 continue
 
-            # Probar en EUR directo y convertido desde USD con BCE
-             variantes = []
+            variantes = []
             if cur == "USD":
                 variantes.append({d: round(v / fx_on(fx, d), 4) for d, v in raw.items() if fx_on(fx, d)})
                 variantes.append({d: round(v, 4) for d, v in raw.items()})
@@ -182,7 +181,6 @@ def main():
         isin = h["i"]
         px = data["px"].setdefault(isin, {})
 
-        # 1a. Intentar Finect para el ultimo valor disponible
         try:
             time.sleep(1.2)
             url = FINECT_URL_FIX.get(h["url"], h["url"])
@@ -205,7 +203,6 @@ def main():
         except Exception as e:
             say(f"AVISO {isin} en Finect ({e}), buscando en Yahoo...")
 
-        # 1b. Rellenar huecos del historico (o el dia actual si fallo Finect) con Yahoo Finance
         sym, y_serie = fetch_yahoo_isin(isin, start, fx, px)
         if y_serie:
             nuevos = 0
@@ -224,7 +221,6 @@ def main():
     while len(data["bx"]) < num_bx:
         data["bx"].append({})
 
-    # 2a. Intentar Finect para el dia actual
     for j, b in enumerate(benchmarks):
         if "url" not in b:
             continue
@@ -248,7 +244,6 @@ def main():
         except Exception as e:
             say(f"AVISO indice {b.get('name', j)} en Finect: {e}")
 
-    # 2b. Rellenar fechas vacias de los indices en Yahoo Finance
     for j, (b_name, ticker) in enumerate(YF_BENCHMARKS):
         try:
             hist = yf.Ticker(ticker).history(start=start)
