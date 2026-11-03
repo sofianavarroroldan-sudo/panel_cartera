@@ -290,25 +290,19 @@
  },
  "fx": {},
  "bx": [
-  {},
-  {}
+  {
+   "2026-11-02": 128.4504
+  },
+  {
+   "2026-11-02": 725.6865
+  }
  ],
  "meta": {
-  "updated": "2026-11-03T09:18:26+00:00",
+  "updated": "2026-11-03T09:27:41+00:00",
   "log": [
    "BCE: 16 tipos de cambio descargados",
-   "IE00B3WJKG14: 2026-11-02 = 43.3577 EUR",
-   "IE00B6R52036: 2026-11-02 = 32.7835 EUR",
-   "IE00B4L5YX21: 2026-11-02 = 71.3356 EUR",
-   "IE00BKM4GZ66: 2026-11-02 = 45.1944 EUR",
-   "IE0007987690: 2026-11-02 = 42.03 EUR",
-   "IE00B52MJY50: 2026-11-02 = 217.6266 EUR",
-   "IE00B4LN9N13: 2026-11-02 = 12.8388 EUR",
-   "IE00BF11F565: 2026-11-02 = 5.33 EUR",
-   "IE00BF3N7094: 2026-11-02 = 6.17 EUR",
-   "IE00B3VTMJ91: 2026-11-02 = 116.44 EUR",
-   "AVISO indice MSCI World (iShares Core MSCI World): 404 Client Error: Not Found for url: https://www.finect.com/etfs/IE00B4L5Y983",
-   "AVISO indice S&P 500 (iShares Core S&P 500): 404 Client Error: Not Found for url: https://www.finect.com/etfs/IE00B5BMR087"
+   "Indice MSCI World (iShares Core MSCI World) (Finect): 2026-11-02 = 128.4504 EUR",
+   "Indice S&P 500 (iShares Core S&P 500) (Finect): 2026-11-02 = 725.6865 EUR"
   ]
  }
 }
