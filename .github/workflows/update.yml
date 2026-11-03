@@ -2,7 +2,7 @@ name: Actualizar datos de la cartera
 on:
   schedule:
     - cron: "30 18 * * 1-6"   # una vez al dia, de lunes a sabado, 18:30 UTC
-  workflow_dispatch:               # boton "Run workflow" para lanzarlo a mano
+  workflow_dispatch:          # boton "Run workflow" para lanzarlo a mano
 permissions:
   contents: write
 concurrency:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install requests beautifulsoup4
+      - run: pip install requests beautifulsoup4 yfinance
       - run: python scripts/update.py
       - name: Guardar cambios
         run: |
