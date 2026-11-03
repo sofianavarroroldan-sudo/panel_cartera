@@ -135,7 +135,8 @@
   "2026-10-27",
   "2026-10-28",
   "2026-10-29",
-  "2026-10-30"
+  "2026-10-30",
+  "2026-11-02"
  ],
  "px": {
   "IE00B3WJKG14": {
@@ -148,7 +149,8 @@
    "2026-10-27": 46.9976,
    "2026-10-28": 47.2992,
    "2026-10-29": 46.8927,
-   "2026-10-30": 44.7279
+   "2026-10-30": 44.7279,
+   "2026-11-02": 43.3577
   },
   "IE00BDDRF478": {
    "2026-10-19": 12.3657,
@@ -172,7 +174,8 @@
    "2026-10-27": 34.5396,
    "2026-10-28": 34.922,
    "2026-10-29": 34.0711,
-   "2026-10-30": 32.3398
+   "2026-10-30": 32.3398,
+   "2026-11-02": 32.7835
   },
   "IE00B4L5YX21": {
    "2026-10-19": 73.4636,
@@ -184,7 +187,8 @@
    "2026-10-27": 72.909,
    "2026-10-28": 72.8979,
    "2026-10-29": 73.3535,
-   "2026-10-30": 72.449
+   "2026-10-30": 72.449,
+   "2026-11-02": 71.3356
   },
   "IE00BKM4GZ66": {
    "2026-10-19": 46.5495,
@@ -194,7 +198,8 @@
    "2026-10-26": 45.0386,
    "2026-10-27": 45.6432,
    "2026-10-28": 46.4998,
-   "2026-10-30": 45.1217
+   "2026-10-30": 45.1217,
+   "2026-11-02": 45.1944
   },
   "IE0007987690": {
    "2026-10-19": 41.35,
@@ -205,7 +210,8 @@
    "2026-10-27": 41.63,
    "2026-10-28": 41.67,
    "2026-10-29": 41.99,
-   "2026-10-30": 41.86
+   "2026-10-30": 41.86,
+   "2026-11-02": 42.03
   },
   "IE00B52MJY50": {
    "2026-10-19": 217.4331,
@@ -216,7 +222,8 @@
    "2026-10-26": 217.6224,
    "2026-10-27": 219.5432,
    "2026-10-28": 219.1698,
-   "2026-10-30": 220.3455
+   "2026-10-30": 220.3455,
+   "2026-11-02": 217.6266
   },
   "IE00B4LN9N13": {
    "2026-10-19": 12.5973,
@@ -228,7 +235,8 @@
    "2026-10-27": 12.7808,
    "2026-10-28": 12.8353,
    "2026-10-29": 12.9654,
-   "2026-10-30": 12.7103
+   "2026-10-30": 12.7103,
+   "2026-11-02": 12.8388
   },
   "IE00BF11F565": {
    "2026-10-19": 5.31,
@@ -240,7 +248,8 @@
    "2026-10-27": 5.3,
    "2026-10-28": 5.3,
    "2026-10-29": 5.32,
-   "2026-10-30": 5.33
+   "2026-10-30": 5.33,
+   "2026-11-02": 5.33
   },
   "IE00BF3N7094": {
    "2026-10-19": 6.17,
@@ -251,7 +260,8 @@
    "2026-10-26": 6.12,
    "2026-10-27": 6.13,
    "2026-10-28": 6.16,
-   "2026-10-30": 6.16
+   "2026-10-30": 6.16,
+   "2026-11-02": 6.17
   },
   "IE00B3VTMJ91": {
    "2026-10-19": 116.16,
@@ -262,7 +272,8 @@
    "2026-10-26": 116.2,
    "2026-10-27": 116.27,
    "2026-10-28": 116.19,
-   "2026-10-30": 116.38
+   "2026-10-30": 116.38,
+   "2026-11-02": 116.44
   },
   "IE000JJPY166": {
    "2026-10-19": 15.65,
@@ -279,29 +290,25 @@
  },
  "fx": {},
  "bx": [
-  {
-
-  },
-  {
-
-  }
+  {},
+  {}
  ],
  "meta": {
-  "updated": "2026-11-03T07:57:40+00:00",
+  "updated": "2026-11-03T09:18:26+00:00",
   "log": [
    "BCE: 16 tipos de cambio descargados",
-   "AVISO IE00B3WJKG14: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00B6R52036: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00B4L5YX21: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00BKM4GZ66: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE0007987690: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00B52MJY50: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00B4LN9N13: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00BF11F565: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00BF3N7094: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "AVISO IE00B3VTMJ91: no se encontro el valor liquidativo (Finect habra cambiado la pagina)",
-   "Indice MSCI World (ETF IWDA): 1 precios nuevos",
-   "Indice S&P 500 (ETF SXR8): 1 precios nuevos"
+   "IE00B3WJKG14: 2026-11-02 = 43.3577 EUR",
+   "IE00B6R52036: 2026-11-02 = 32.7835 EUR",
+   "IE00B4L5YX21: 2026-11-02 = 71.3356 EUR",
+   "IE00BKM4GZ66: 2026-11-02 = 45.1944 EUR",
+   "IE0007987690: 2026-11-02 = 42.03 EUR",
+   "IE00B52MJY50: 2026-11-02 = 217.6266 EUR",
+   "IE00B4LN9N13: 2026-11-02 = 12.8388 EUR",
+   "IE00BF11F565: 2026-11-02 = 5.33 EUR",
+   "IE00BF3N7094: 2026-11-02 = 6.17 EUR",
+   "IE00B3VTMJ91: 2026-11-02 = 116.44 EUR",
+   "AVISO indice MSCI World (iShares Core MSCI World): 404 Client Error: Not Found for url: https://www.finect.com/etfs/IE00B4L5Y983",
+   "AVISO indice S&P 500 (iShares Core S&P 500): 404 Client Error: Not Found for url: https://www.finect.com/etfs/IE00B5BMR087"
   ]
  }
 }
