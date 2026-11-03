@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Actualiza data.json: ultimo valor liquidativo de cada activo (Finect), tipo de cambio
-USD/EUR del BCE (la misma fuente que el conversor del Banco de Espana) e indices de referencia.
+USD/EUR del BCE (la misma fuente que el conversor del Banco de Espana) e indices de referencia (todo de Finect, salvo el tipo de cambio).
 Si algo falla, avisa en el log y NO borra datos anteriores."""
 import csv, datetime as dt, io, json, re
 from pathlib import Path
@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 DATA = ROOT / "data.json"
 UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36",
-      "Accept-Language": "es-ES,es;q=0.9"}
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "es-ES,es;q=0.9", "Referer": "https://www.finect.com/"}
 MIN_COVERAGE = 0.5   # una fecha entra en el panel si al menos el 50 % de los activos tienen dato
 log = []
 
@@ -22,15 +23,32 @@ def say(msg):
 def to_num(s):
     return float(s.replace(".", "").replace(",", "."))
 
-# En Finect el precio aparece como "49,97$" seguido de "Datos a 30/10/2026"
-RE = re.compile(r"([\d\.]+,\d+)\s*([$€])\s*Datos a\s*(\d{2})/(\d{2})/(\d{4})")
+# En Finect aparece el precio ("49,97$") y, mas adelante, "Datos a 30/10/2026".
+# Buscamos la fecha y tomamos el ultimo precio con divisa justo antes (aunque haya cambios del dia entre medias).
+PRICE = re.compile(r"(\d{1,3}(?:\.\d{3})*,\d+|\d+,\d+)\s*(\$|€|USD|EUR)")
+DATE = re.compile(r"(?:Datos a|valor liquidativo:?)\s*(\d{2})/(\d{2})/(\d{4})", re.I)
+
+def clean(html):
+    return re.sub(r"\s+", " ", BeautifulSoup(html, "html.parser").get_text(" "))
 
 def parse_finect(html):
-    text = re.sub(r"\s+", " ", BeautifulSoup(html, "html.parser").get_text(" "))
-    m = RE.search(text)
+    text = clean(html)
+    m = DATE.search(text)
     if not m:
         return None
-    return to_num(m.group(1)), m.group(2), f"{m.group(5)}-{m.group(4)}-{m.group(3)}"
+    prices = PRICE.findall(text[max(0, m.start() - 200):m.start()])
+    if not prices:
+        return None
+    num, cur = prices[-1]
+    return to_num(num), ("$" if cur in ("$", "USD") else "€"), f"{m.group(3)}-{m.group(2)}-{m.group(1)}"
+
+def diagnose(name, r):
+    text = clean(r.text)
+    i = text.find("Datos a")
+    say(f"DIAGNOSTICO {name}: http={r.status_code}, {len(r.text)} bytes, 'Datos a' en posicion {i}")
+    say(f"  inicio: {text[:160]!r}")
+    if i >= 0:
+        say(f"  contexto: {text[max(0, i - 160):i + 60]!r}")
 
 def ecb_usd(start):
     """Dolares por euro (tipo de referencia del BCE), por dia."""
@@ -43,19 +61,6 @@ def ecb_usd(start):
 def fx_on(fx, d):
     ks = [k for k in fx if k <= d]
     return fx[max(ks)] if ks else None
-
-def bench_history(ticker, start):
-    import yfinance as yf
-    df = yf.download(ticker, start=start, progress=False, auto_adjust=False)
-    out = {}
-    if df is None or df.empty:
-        return out
-    col = df["Close"]
-    if hasattr(col, "columns"):
-        col = col.iloc[:, 0]
-    for idx, v in col.items():
-        out[idx.strftime("%Y-%m-%d")] = round(float(v), 4)
-    return out
 
 def main():
     data = json.loads(DATA.read_text(encoding="utf-8"))
@@ -76,6 +81,7 @@ def main():
             res = parse_finect(r.text)
             if not res:
                 say(f"AVISO {isin}: no se encontro el valor liquidativo (Finect habra cambiado la pagina)")
+                diagnose(isin, r)
                 continue
             price, cur, d = res
             if cur == "$":
@@ -97,12 +103,25 @@ def main():
     data.setdefault("bx", [{} for _ in CFG["benchmarks"]])
     for j, b in enumerate(CFG["benchmarks"]):
         try:
-            hist = bench_history(b["yahoo"], start)
-            new = {d: v for d, v in hist.items() if data["bx"][j].get(d) != v}
-            if new:
-                data["bx"][j].update(new)
+            r = requests.get(b["url"], headers=UA, timeout=30)
+            r.raise_for_status()
+            res = parse_finect(r.text)
+            if not res:
+                say(f"AVISO indice {b['name']}: no se encontro el valor liquidativo (revisad el enlace de Finect en config.json)")
+                diagnose(b["name"], r)
+                continue
+            price, cur, d = res
+            if cur == "$":
+                rate = fx_on(fx, d)
+                if not rate:
+                    say(f"AVISO indice {b['name']}: sin tipo de cambio para {d}")
+                    continue
+                price = price / rate
+            price = round(price, 4)
+            if d >= start and data["bx"][j].get(d) != price:
+                data["bx"][j][d] = price
                 changed = True
-                say(f"Indice {b['name']}: {len(new)} precios nuevos")
+                say(f"Indice {b['name']}: {d} = {price} EUR")
         except Exception as e:
             say(f"AVISO indice {b['name']}: {e}")
 
