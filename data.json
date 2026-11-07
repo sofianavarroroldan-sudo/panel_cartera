@@ -241,7 +241,8 @@
    "2026-11-02": 42.03,
    "2026-11-03": 41.78,
    "2026-11-04": 42.55,
-   "2026-11-05": 42.38
+   "2026-11-05": 42.38,
+   "2026-11-06": 41.97
   },
   "IE00B52MJY50": {
    "2026-10-19": 217.4331,
@@ -342,7 +343,8 @@
    "2026-11-02": 15.66,
    "2026-11-03": 15.66,
    "2026-11-04": 15.66,
-   "2026-11-05": 15.67
+   "2026-11-05": 15.67,
+   "2026-11-06": 15.67
   }
  },
  "fx": {},
@@ -383,23 +385,11 @@
   }
  ],
  "meta": {
-  "updated": "2026-11-06T19:25:43+00:00",
+  "updated": "2026-11-07T19:15:29+00:00",
   "log": [
    "BCE: 20 tipos de cambio descargados",
-   "IE00B3WJKG14 (Yahoo IUIT.L): 1 fechas vacias rellenadas",
-   "IE00BDDRF478 (Yahoo IUCM.L): 1 fechas vacias rellenadas",
-   "IE00B6R52036 (Yahoo IAUP.L): 1 fechas vacias rellenadas",
-   "IE00B4L5YX21 (Yahoo IJPA.L): 1 fechas vacias rellenadas",
-   "IE00BKM4GZ66 (Yahoo EIMI.L): 1 fechas vacias rellenadas",
-   "IE0007987690 (Finect): 2026-11-05 = 42.38 EUR",
-   "IE00B52MJY50 (Yahoo CSPXJ.SW): 1 fechas vacias rellenadas",
-   "IE00B4LN9N13 (Yahoo 2B7C.DE): 1 fechas vacias rellenadas",
-   "IE00BF11F565 (Yahoo IEAA.L): 1 fechas vacias rellenadas",
-   "IE00BF3N7094 (Yahoo HIGH.L): 1 fechas vacias rellenadas",
-   "IE00B3VTMJ91 (Yahoo CBE3.L): 1 fechas vacias rellenadas",
-   "IE000JJPY166 (Finect): 2026-11-05 = 15.67 EUR",
-   "Indice MSCI World (ETF IWDA) (Yahoo IWDA.AS): 1 huecos rellenados",
-   "Indice S&P 500 (ETF SXR8) (Yahoo SXR8.DE): 1 huecos rellenados"
+   "IE0007987690 (Finect): 2026-11-06 = 41.97 EUR",
+   "IE000JJPY166 (Finect): 2026-11-06 = 15.67 EUR"
   ]
  }
 }
