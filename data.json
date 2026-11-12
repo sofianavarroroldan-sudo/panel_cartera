@@ -255,7 +255,8 @@
    "2026-11-04": 42.55,
    "2026-11-05": 42.38,
    "2026-11-06": 41.97,
-   "2026-11-09": 42.51
+   "2026-11-09": 42.51,
+   "2026-11-10": 42.62
   },
   "IE00B52MJY50": {
    "2026-10-19": 217.4331,
@@ -273,7 +274,8 @@
    "2026-11-04": 219.8456,
    "2026-11-05": 220.0641,
    "2026-11-06": 219.7044,
-   "2026-11-09": 219.1548
+   "2026-11-09": 219.1548,
+   "2026-11-10": 219.9483
   },
   "IE00B4LN9N13": {
    "2026-10-19": 12.5973,
@@ -291,7 +293,8 @@
    "2026-11-04": 12.726,
    "2026-11-05": 12.538,
    "2026-11-06": 12.42,
-   "2026-11-09": 12.7937
+   "2026-11-09": 12.7937,
+   "2026-11-10": 12.7608
   },
   "IE00BF11F565": {
    "2026-10-19": 5.31,
@@ -366,7 +369,8 @@
    "2026-11-04": 15.66,
    "2026-11-05": 15.67,
    "2026-11-06": 15.67,
-   "2026-11-09": 15.67
+   "2026-11-09": 15.67,
+   "2026-11-10": 15.67
   }
  },
  "fx": {},
@@ -387,7 +391,8 @@
    "2026-11-04": 130.53,
    "2026-11-05": 127.47,
    "2026-11-06": 127.33,
-   "2026-11-09": 128.7858
+   "2026-11-09": 128.7858,
+   "2026-11-10": 128.2861
   },
   {
    "2026-11-02": 725.6865,
@@ -405,35 +410,20 @@
    "2026-11-04": 738.44,
    "2026-11-05": 719.88,
    "2026-11-06": 719.16,
-   "2026-11-09": 728.0443
+   "2026-11-09": 728.0443,
+   "2026-11-10": 723.9522
   }
  ],
  "meta": {
-  "updated": "2026-11-10T23:38:35+00:00",
+  "updated": "2026-11-12T00:55:50+00:00",
   "log": [
-   "BCE: 22 tipos de cambio descargados",
-   "IE00B3WJKG14 (Finect): 2026-11-09 = 42.7321 EUR",
-   "IE00B3WJKG14 (Yahoo IUIT.L): 1 fechas vacias rellenadas",
-   "IE00BDDRF478 (Finect): 2026-11-09 = 11.811 EUR",
-   "IE00BDDRF478 (Yahoo IUCM.L): 1 fechas vacias rellenadas",
-   "IE00B6R52036 (Finect): 2026-11-09 = 37.8898 EUR",
-   "IE00B6R52036 (Yahoo IAUP.L): 1 fechas vacias rellenadas",
-   "IE00B4L5YX21 (Finect): 2026-11-09 = 69.1325 EUR",
-   "IE00B4L5YX21 (Yahoo IJPA.L): 1 fechas vacias rellenadas",
-   "IE00BKM4GZ66 (Finect): 2026-11-09 = 43.8846 EUR",
-   "IE00BKM4GZ66 (Yahoo EIMI.L): 1 fechas vacias rellenadas",
-   "IE0007987690 (Finect): 2026-11-09 = 42.51 EUR",
-   "IE00B52MJY50 (Finect): 2026-11-09 = 219.1548 EUR",
-   "IE00B4LN9N13 (Finect): 2026-11-09 = 12.7937 EUR",
-   "IE00BF11F565 (Finect): 2026-11-09 = 5.35 EUR",
-   "IE00BF11F565 (Yahoo IEAA.L): 1 fechas vacias rellenadas",
-   "IE00BF3N7094 (Finect): 2026-11-09 = 6.21 EUR",
-   "IE00BF3N7094 (Yahoo HIGH.L): 1 fechas vacias rellenadas",
-   "IE00B3VTMJ91 (Finect): 2026-11-09 = 116.68 EUR",
-   "IE00B3VTMJ91 (Yahoo CBE3.L): 1 fechas vacias rellenadas",
-   "IE000JJPY166 (Finect): 2026-11-09 = 15.67 EUR",
-   "Indice MSCI World (iShares Core MSCI World) (Finect): 2026-11-09 = 128.7858 EUR",
-   "Indice S&P 500 (iShares Core S&P 500) (Finect): 2026-11-09 = 728.0443 EUR"
+   "BCE: 23 tipos de cambio descargados",
+   "IE0007987690 (Finect): 2026-11-10 = 42.62 EUR",
+   "IE00B52MJY50 (Finect): 2026-11-10 = 219.9483 EUR",
+   "IE00B4LN9N13 (Finect): 2026-11-10 = 12.7608 EUR",
+   "IE000JJPY166 (Finect): 2026-11-10 = 15.67 EUR",
+   "Indice MSCI World (iShares Core MSCI World) (Finect): 2026-11-10 = 128.2861 EUR",
+   "Indice S&P 500 (iShares Core S&P 500) (Finect): 2026-11-10 = 723.9522 EUR"
   ]
  }
 }
